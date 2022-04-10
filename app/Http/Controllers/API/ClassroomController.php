@@ -1,6 +1,7 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
+use App\Http\Controllers\Controller;
 
 use App\Http\Resources\ClassroomResource;
 use App\Models\Classroom;
@@ -16,8 +17,8 @@ class ClassroomController extends Controller
      */
     public function index()
     {
-        $customers = Classroom::all();
-        return $this->handleResponse($customers, 'CLassroom have been retrieved!');
+        $classroom = Classroom::all();
+        return $this->handleResponse(new ClassroomResource($classroom), 'CLassroom have been retrieved!');
     }
 
     /**

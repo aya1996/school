@@ -17,10 +17,13 @@ class Teacher extends Model
     ];
  
 
-    public function classrooms()
+    public function lessons()
     {
-        return $this->belongsToMany(Classroom::class , 'student_classroom' , 'teacher_id' , 'classroom_id');
+        return $this->hasMany(Lesson::class);
     }
+
+    
+     
 
     
     

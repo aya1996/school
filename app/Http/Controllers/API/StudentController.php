@@ -1,7 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Controller;
+use App\Http\Resources\StudentResource;
 use App\Models\Student;
 use Illuminate\Http\Request;
 
@@ -11,7 +13,7 @@ class StudentController extends Controller
     public function index()
     {
         $students = Student::all();
-        return $this->handleResponse($students, 'Students retrieved successfully.');
+        return $this->handleResponse(new StudentResource($students), 'Students retrieved successfully.');
     }
     
     public function show($id)
@@ -20,13 +22,28 @@ class StudentController extends Controller
         if(!$student){
             return $this->handleError('Student not found.');
         }
-        return $this->handleResponse($student, 'Student retrieved successfully.');
+        return $this->handleResponse(new StudentResource($student), 'Student retrieved successfully.');
     }
     
     public function store(Request $request)
     {
-        $student = Student::create($request->all());
-        return $this->handleResponse($student, 'Student created successfully.');
+        $attr = $request->validate([
+            'name' => 'required|string',
+            'email'     => 'required|email |unique:students',
+            
+           
+        ]);
+        $user = Student::create([
+            'name'      => $attr['name'],
+            'email'     => $attr['email'],
+           
+        ]);
+       
+        $response = [
+            'student'     => $user->only(['name','email']),
+           
+        ];
+        return response($response, 201);
     }
     
     public function update(Request $request, $id)
@@ -36,7 +53,7 @@ class StudentController extends Controller
             return $this->handleError('Student not found.');
         }
         $student->update($request->all());
-        return $this->handleResponse($student, 'Student updated successfully.');
+        return $this->handleResponse(new StudentResource($student), 'Student updated successfully.');
     }
     
     public function destroy($id)
@@ -46,6 +63,6 @@ class StudentController extends Controller
             return $this->handleError('Student not found.');
         }
         $student->delete();
-        return $this->handleResponse($student, 'Student deleted successfully.');
+        return $this->handleResponse(new StudentResource($student), 'Student deleted successfully.');
     }
 }

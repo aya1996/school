@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
-
+namespace App\Http\Controllers\API;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\TeacherResource;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
 
@@ -11,7 +12,7 @@ class TeacherController extends Controller
     public function index()
     {
         $teachers = Teacher::all();
-        return $this->handleResponse($teachers, 'Teachers retrieved successfully.');
+        return $this->handleResponse(new TeacherResource($teachers), 'Teachers retrieved successfully.');
     }
 
     public function show($id)
@@ -20,13 +21,29 @@ class TeacherController extends Controller
         if(!$teacher){
             return $this->handleError('Teacher not found.');
         }
-        return $this->handleResponse($teacher, 'Teacher retrieved successfully.');
+        return $this->handleResponse(new TeacherResource($teacher), 'Teacher retrieved successfully.');
     }
 
     public function store(Request $request)
     {
-        $teacher = Teacher::create($request->all());
-        return $this->handleResponse($teacher, 'Teacher created successfully.');
+        
+        $attr = $request->validate([
+            'name' => 'required|string',
+            'email'     => 'required|email |unique:teachers',
+            
+           
+        ]);
+        $user = Teacher::create([
+            'name'      => $attr['name'],
+            'email'     => $attr['email'],
+        
+        ]);
+       
+        $response = [
+            'teacher'     => $user->only(['name','email','created_at','updated_at']),
+           
+        ];
+        return response($response, 201);
     }
 
     public function update(Request $request, $id)
@@ -36,7 +53,7 @@ class TeacherController extends Controller
             return $this->handleError('Teacher not found.');
         }
         $teacher->update($request->all());
-        return $this->handleResponse($teacher, 'Teacher updated successfully.');
+        return $this->handleResponse(new TeacherResource($teacher), 'Teacher updated successfully.');
     }
 
     public function destroy($id)
@@ -46,6 +63,6 @@ class TeacherController extends Controller
             return $this->handleError('Teacher not found.');
         }
         $teacher->delete();
-        return $this->handleResponse($teacher, 'Teacher deleted successfully.');
+        return $this->handleResponse(new TeacherResource($teacher), 'Teacher deleted successfully.');
     }
 }
