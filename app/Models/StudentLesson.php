@@ -19,21 +19,14 @@ class StudentLesson extends Model
 
     public function student()
     {
-        return $this->belongsTo(Student::class);
+        return $this->hasMany(Student::class);
     }
 
-    public function lesson()
-    {
-        return $this->belongsTo(Lesson::class);
-    }
 
-    public function teacher()
-    {
-        return $this->belongsTo(Teacher::class);
-    }
 
     public function classroom()
     {
-        return $this->belongsTo(Classroom::class);
+        return $this->hasMany(Classroom::class);
     }
+    
 }

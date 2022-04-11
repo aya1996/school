@@ -33,9 +33,11 @@ class LessonController extends Controller
             'description'     => 'required|string',
             'start_date'     => 'required|date',
             'end_date'     => 'required|date',
-            'student_id'     => 'required|integer',
             'teacher_id'     => 'required|integer',
+            
+            'student_id'     => 'required|integer',
             'classroom_id'     => 'required|integer',
+           
 
 
 
@@ -45,18 +47,29 @@ class LessonController extends Controller
             'description'     => $attr['description'],
             'start_date'     => $attr['start_date'],
             'end_date'     => $attr['end_date'],
+            'teacher_id'     => $attr['teacher_id'],
+
 
 
 
         ]);
+       
+
+     
         $lesson->students()->attach($attr['student_id']);
-        $lesson->teachers()->attach($attr['teacher_id']);
-        $lesson->classrooms()->attach($attr['classroom_id']);
 
-        $response = [
-            'lesson'     => $lesson->only(['name','description','start_date','end_date']),
+       
 
-        ];
-        return response($response, 201);
+     
+      
+      
+        
+        return $this->handleResponse(new LessonResource($lesson), 'Lesson created successfully.');
+
+        // $response = [
+        //     'lesson'     => $lesson->only(['name','description','start_date','end_date']),
+
+        // // ];
+        // return response($response, 201);
     }
 }
